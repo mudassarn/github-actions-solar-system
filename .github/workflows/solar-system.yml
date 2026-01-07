@@ -64,4 +64,4 @@ jobs:
       run: npm install
 
     - name: Coverage
-      run: npm coverage
+      run: npm run coverage
