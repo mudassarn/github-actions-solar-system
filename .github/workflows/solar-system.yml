@@ -155,16 +155,6 @@ jobs:
   #     env:
   #       NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   dev-deploy:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
-    - name: Deploy using a variable
-      run: echo ${{vars.MONGO_USERNAME}}
-    - name: Deploy using a environment variable that contains username
-      run: echo $MONGO_USERNAME
-    - name: Deploy using a environment variable that contains password
-      run: echo $MONGO_PASSWORD
-    - name: Deploy using a variable
-      run: echo ${{secrets.MONGO_PASSWORD}}
-      
+    uses: ./.github/workflows/rf.yaml
+  prod-deploy:
+    uses: ./.github/workflows/rf.yaml

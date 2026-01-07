@@ -1,0 +1,17 @@
+name: Reusable Workflow
+on:
+  workflow_call
+jobs:
+  dev-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+    - name: Deploy using a variable
+      run: echo ${{vars.MONGO_USERNAME}}
+    - name: Deploy using a environment variable that contains username
+      run: echo $MONGO_USERNAME
+    - name: Deploy using a environment variable that contains password
+      run: echo $MONGO_PASSWORD
+    - name: Deploy using a variable
+      run: echo ${{secrets.MONGO_PASSWORD}}
