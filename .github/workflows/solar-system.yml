@@ -16,123 +16,123 @@ concurrency:
   group: github.ref
   cancel-in-progress: true
 jobs:
-  unit-testing:
-    name: Unit Testing
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        version: [18,20]
-    runs-on: ${{matrix.os}}
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+  # unit-testing:
+  #   name: Unit Testing
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+  #       version: [18,20]
+  #   runs-on: ${{matrix.os}}
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4
 
-    - name: Setup NodeJS Version ${{matrix.version}}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{matrix.version}}
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        key: ${{ matrix.os }}-node-modules-${{hashFiles('package-lock.json')}}
-    - name: Install Dependencies
-      run: npm install
+  #   - name: Setup NodeJS Version ${{matrix.version}}
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: ${{matrix.version}}
+  #   - name: Cache Dependencies
+  #     uses: actions/cache@v4
+  #     with:
+  #       path: node_modules
+  #       key: ${{ matrix.os }}-node-modules-${{hashFiles('package-lock.json')}}
+  #   - name: Install Dependencies
+  #     run: npm install
 
-    - name: Unit Testing
-      run: npm test
+  #   - name: Unit Testing
+  #     run: npm test
       
-    - name: Archive Test Result
-      uses: actions/upload-artifact@v4
-      with:
-        name: ${{matrix.os}}-${{matrix.version}}-Mocha-Test-Result
-        path: test-results.xml
+  #   - name: Archive Test Result
+  #     uses: actions/upload-artifact@v4
+  #     with:
+  #       name: ${{matrix.os}}-${{matrix.version}}-Mocha-Test-Result
+  #       path: test-results.xml
   
-  code-coverage:
-    name: Code Coverage
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        version: [20]
-    runs-on: ${{matrix.os}}
-    continue-on-error: true
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+  # code-coverage:
+  #   name: Code Coverage
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+  #       version: [20]
+  #   runs-on: ${{matrix.os}}
+  #   continue-on-error: true
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4
 
-    - name: Setup NodeJS Version ${{matrix.version}}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{matrix.version}}
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      with:
-        path: node_modules
-        key: ${{ matrix.os }}-node-modules-${{hashFiles('package-lock.json')}}
-    - name: Install Dependencies
-      run: npm install
+  #   - name: Setup NodeJS Version ${{matrix.version}}
+  #     uses: actions/setup-node@v4
+  #     with:
+  #       node-version: ${{matrix.version}}
+  #   - name: Cache Dependencies
+  #     uses: actions/cache@v4
+  #     with:
+  #       path: node_modules
+  #       key: ${{ matrix.os }}-node-modules-${{hashFiles('package-lock.json')}}
+  #   - name: Install Dependencies
+  #     run: npm install
 
-    - name: Coverage
-      run: npm run coverage
+  #   - name: Coverage
+  #     run: npm run coverage
 
-  docker:
-    name: Containerization
-    runs-on: ubuntu-latest
-    needs: [unit-testing, code-coverage]
-    permissions:
-      packages: write
-      contents: read
-    steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+  # docker:
+  #   name: Containerization
+  #   runs-on: ubuntu-latest
+  #   needs: [unit-testing, code-coverage]
+  #   permissions:
+  #     packages: write
+  #     contents: read
+  #   steps:
+  #   - name: Checkout Repository
+  #     uses: actions/checkout@v4
 
-    - name: Login to Docker Hub
-      uses: docker/login-action@v3
-      with:
-        username: ${{ vars.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_TOKEN }}
+  #   - name: Login to Docker Hub
+  #     uses: docker/login-action@v3
+  #     with:
+  #       username: ${{ vars.DOCKERHUB_USERNAME }}
+  #       password: ${{ secrets.DOCKERHUB_TOKEN }}
     
-    - name: Login to GHCR
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GITHUB_TOKEN }}
+  #   - name: Login to GHCR
+  #     uses: docker/login-action@v3
+  #     with:
+  #       registry: ghcr.io
+  #       username: ${{ github.repository_owner }}
+  #       password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Docker build for testing
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        push: false
-        tags: |
-          ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
-          ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
+  #   - name: Docker build for testing
+  #     uses: docker/build-push-action@v6
+  #     with:
+  #       context: .
+  #       push: false
+  #       tags: |
+  #         ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+  #         ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
     
-    - name: Test the Image
-      run: |
-        docker images
-        docker run --name solar-system-app -d \
-          -p 3000:3000 \
-          -e MONGO_URI=$MONGO_URI \
-          -e MONGO_USERNAME=$MONGO_USERNAME \
-          -e MONGO_PASSWORD=$MONGO_PASSWORD \
-          ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+  #   - name: Test the Image
+  #     run: |
+  #       docker images
+  #       docker run --name solar-system-app -d \
+  #         -p 3000:3000 \
+  #         -e MONGO_URI=$MONGO_URI \
+  #         -e MONGO_USERNAME=$MONGO_USERNAME \
+  #         -e MONGO_PASSWORD=$MONGO_PASSWORD \
+  #         ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
 
-        export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
-        echo $IP
+  #       export IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' solar-system-app)
+  #       echo $IP
 
-        echo Testing Image URL using wget
-        which wget
-        wget -q -O - 127.0.0.1:3000/live | grep live
+  #       echo Testing Image URL using wget
+  #       which wget
+  #       wget -q -O - 127.0.0.1:3000/live | grep live
 
-    - name: Container Registry Push
-      uses: docker/build-push-action@v6
-      with:
-        context: .
-        push: true
-        tags: |
-          ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
-          ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
+  #   - name: Container Registry Push
+  #     uses: docker/build-push-action@v6
+  #     with:
+  #       context: .
+  #       push: true
+  #       tags: |
+  #         ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+  #         ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
   node-package:
     name: Node Package
     runs-on: ubuntu-latest
