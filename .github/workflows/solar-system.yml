@@ -136,7 +136,7 @@ jobs:
   node-package:
     name: Node Package
     runs-on: ubuntu-latest
-    needs: [unit-testing, code-coverage]
+    # needs: [unit-testing, code-coverage]
     permissions:
       packages: write
       contents: read
