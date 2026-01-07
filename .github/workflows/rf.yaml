@@ -13,5 +13,5 @@ jobs:
       run: echo $MONGO_USERNAME
     - name: Deploy using a environment variable that contains password
       run: echo $MONGO_PASSWORD
-    - name: Deploy using a variable
+    - name: Deploy using a secret
       run: echo ${{secrets.MONGO_PASSWORD}}
