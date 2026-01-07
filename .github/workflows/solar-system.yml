@@ -88,12 +88,22 @@ jobs:
       with:
         username: ${{ vars.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
+    
+    - name: Login to GHCR
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.repository_owner }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
     - name: Docker build for testing
       uses: docker/build-push-action@v6
       with:
         context: .
-        push: true
-        tags: ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+        push: false
+        tags: 
+          ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+          ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
     
     - name: Test the Image
       run: |
@@ -112,9 +122,11 @@ jobs:
         which wget
         wget -q -O - 127.0.0.1:3000/live | grep live
 
-    - name: Docker push
+    - name: Container Registry Push
       uses: docker/build-push-action@v6
       with:
         context: .
         push: true
-        tags: ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+        tags: 
+          ${{vars.DOCKERHUB_USERNAME}}/solar-system:${{github.sha}}
+          ghcr.io/${{github.repository_owner}}/solar-system:${{github.sha}}
