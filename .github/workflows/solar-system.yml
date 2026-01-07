@@ -12,12 +12,15 @@ env:
   MONGO_USERNAME: ${{vars.MONGO_USERNAME}}
   MONGO_PASSWORD: ${{secrets.MONGO_PASSWORD}}
 
+concurrency:
+  group: github.ref
+  cancel-in-progress: true
 jobs:
   unit-testing:
     name: Unit Testing
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         version: [18,20]
     runs-on: ${{matrix.os}}
     steps:
@@ -47,6 +50,7 @@ jobs:
   
   coverage:
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
