@@ -8,12 +8,12 @@ on:
       - 'feature/*'
     
 jobs:
-    strategy:
+    unit-testing:
+      name: Unit Testing
+      strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macos-latest]
         version: [18,20]
-    unit-testing:
-      name: Unit Testing
       runs-on: ${{matrix.os}}
       steps:
       - name: Checkout Repository
