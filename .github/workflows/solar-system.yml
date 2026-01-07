@@ -11,9 +11,9 @@ jobs:
     unit-testing:
       name: Unit Testing
       strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
-        version: [18,20]
+        matrix:
+          os: [ubuntu-latest, windows-latest, macos-latest]
+          version: [18,20]
       runs-on: ${{matrix.os}}
       steps:
       - name: Checkout Repository
